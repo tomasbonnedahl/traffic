@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Stockholm restidskarta</title>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script src="map_data.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCimS5bR0svoNyZs48kGHUT7A0zrWE5D0s&callback=initMap"></script>
+  </body>
+</html>

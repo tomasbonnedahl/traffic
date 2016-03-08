@@ -1,8 +1,15 @@
 function initMap() {
+    var centerLatLon = {lat: 59.332598, lng: 18.065236};
+
     var map = new google.maps.Map(document.getElementById('map'), {
       zoom: 11,
-      center: {lat: 59.332598, lng: 18.065236},
+      center: centerLatLon,
       mapTypeId: google.maps.MapTypeId.TERRAIN
+    });
+
+    var marker = new google.maps.Marker({
+        position: centerLatLon,
+        map: map
     });
 
     getFileFromServer('coordinates_colored.txt', function(text) {

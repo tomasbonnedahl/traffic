@@ -13,7 +13,7 @@ def get_payload(coordinate):
                'originCoordLong': coordinate.get_longitude_as_str(),
                'originCoordName': 'Stockholm',
                'destId': '300109000',
-               'date': '2016-03-07',
+               'date': '2016-03-10',
                'time': '08:30',
                'searchForArrival': '1'}
     return payload
@@ -22,11 +22,17 @@ def execute_request(coordinate):
     payload = get_payload(coordinate)
     print 'Requesting for coordinate:', coordinate
     try:
-        response = requests.get('http://api.sl.se/api2/TravelplannerV2/trip.json', params=payload, timeout=5.0)
+        response = requests.get('http://api.sl.se/api2/TravelplannerV2/trip.json', params=payload, timeout=10.0)
     except requests.exceptions.Timeout as err:
         print '### Timeout exception received:', err
         response = None
-    time.sleep(2)
+    except requests.exceptions.ConnectionError as err:
+        print '### Connection error:', err
+        response = None
+    except Exception as err:
+        print '### Other exception:', err
+        response = None
+    time.sleep(3)
     return response
 
 def get_duration_from_trip_data(trip_data):

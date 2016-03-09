@@ -20,7 +20,20 @@ minutes_to_color = {
     90: 'A0A0A0',
     95: '808080'
 }
-
+'''
+minutes_to_color = {
+    0:  '#003300',
+    10: '#009900',
+    20: '#00FF00',
+    30: '#66FF66',
+    40: '#CCFFCC',
+    50: '#CCFFFF',
+    60: '#CCCCFF',
+    70: '#FFCCFF',
+    80: '#E0E0E0',
+    90: 'A0A0A0',
+}
+'''
 class Coordinate(object):
     def __init__(self, lat, lon):
         self._lat = lat

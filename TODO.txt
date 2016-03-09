@@ -15,4 +15,4 @@ LOW:
     - https://developers.google.com/maps/documentation/javascript/styling#creating_a_styledmaptype
 - Filter coordinates water/land and save to coordinates_filtered.txt (known water coords?)
 - SQL instead of files?
-- Add another line
+- Added line...

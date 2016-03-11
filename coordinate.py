@@ -1,39 +1,5 @@
-minutes_to_color = {
-    0:  '#003300',
-    5:  '#006600',
-    10: '#009900',
-    15: '#00CC00',
-    20: '#00FF00',
-    25: '#33FF33',
-    30: '#66FF66',
-    35: '#99FF99',
-    40: '#CCFFCC',
-    45: '#CCFFE5',
-    50: '#CCFFFF',
-    55: '#CCE5FF',
-    60: '#CCCCFF',
-    65: '#E5CCFF',
-    70: '#FFCCFF',
-    75: '#FFCCE5',
-    80: '#E0E0E0',
-    85: '#C0C0C0',
-    90: 'A0A0A0',
-    95: '808080'
-}
-'''
-minutes_to_color = {
-    0:  '#003300',
-    10: '#009900',
-    20: '#00FF00',
-    30: '#66FF66',
-    40: '#CCFFCC',
-    50: '#CCFFFF',
-    60: '#CCCCFF',
-    70: '#FFCCFF',
-    80: '#E0E0E0',
-    90: 'A0A0A0',
-}
-'''
+from minutes_to_color import minutes_to_color_5, minutes_to_color_10
+
 class Coordinate(object):
     def __init__(self, lat, lon):
         self._lat = lat
@@ -84,8 +50,12 @@ class Coordinate(object):
     def has_duration(self):
         return self._minutes != None
 
+    def get_minutes_to_color_mapping(self):
+        return minutes_to_color_5
+
     def get_color(self):
         color = None
+        minutes_to_color = self.get_minutes_to_color_mapping()
         if self.has_duration():
             for key in sorted(minutes_to_color.keys()):
                 if int(self.get_duration()) < key and not color:

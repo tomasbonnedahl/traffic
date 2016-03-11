@@ -16,7 +16,7 @@ SW = (SOUTHERN_LATITUDE, WESTERN_LONGITUDE) # SW Botkyrka
 SE = (SOUTHERN_LATITUDE, EASTERN_LONGITUDE) # SE Varmdo
 NE = (NORTHERN_LATITUDE, EASTERN_LONGITUDE) # NE Ljustero
 
-GRID_LINES = 4
+GRID_LINES = 2
 
 class CoordinateGenerator(object):
     def __init__(self, north, south, west, east):

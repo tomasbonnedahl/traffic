@@ -1,39 +1,7 @@
-minutes_to_color = {
-    0:  '#003300',
-    5:  '#006600',
-    10: '#009900',
-    15: '#00CC00',
-    20: '#00FF00',
-    25: '#33FF33',
-    30: '#66FF66',
-    35: '#99FF99',
-    40: '#CCFFCC',
-    45: '#CCFFE5',
-    50: '#CCFFFF',
-    55: '#CCE5FF',
-    60: '#CCCCFF',
-    65: '#E5CCFF',
-    70: '#FFCCFF',
-    75: '#FFCCE5',
-    80: '#E0E0E0',
-    85: '#C0C0C0',
-    90: 'A0A0A0',
-    95: '808080'
-}
-'''
-minutes_to_color = {
-    0:  '#003300',
-    10: '#009900',
-    20: '#00FF00',
-    30: '#66FF66',
-    40: '#CCFFCC',
-    50: '#CCFFFF',
-    60: '#CCCCFF',
-    70: '#FFCCFF',
-    80: '#E0E0E0',
-    90: 'A0A0A0',
-}
-'''
+import pickle
+
+from minutes_to_color import minutes_to_color
+
 class Coordinate(object):
     def __init__(self, lat, lon):
         self._lat = lat
@@ -135,3 +103,12 @@ class Coordinates(object):
 
     def coordinates(self):
         return self._coordinates
+
+class ExceptionCoordinates(Coordinates):
+    def __init__(self):
+        super(ExceptionCoordinates, self).__init__()
+
+    def write_exception_coordinates_to_file(self):
+        # TODO: Specific file name (same as traffic data file postfix)
+        with open('coordinates_exception.txt', 'wb') as exception_file:
+            pickle.dump(self, exception_file)

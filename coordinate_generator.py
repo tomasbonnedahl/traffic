@@ -1,14 +1,14 @@
 from coordinate import Coordinate, Coordinates
 
-NORTHERN_LATITUDE = 59.514256 # Horizontal
-SOUTHERN_LATITUDE = 59.244671 # Horizontal
-WESTERN_LONGITUDE = 17.756988 # Vertical
-EASTERN_LONGITUDE = 18.449283 # Vertical
+#NORTHERN_LATITUDE = 59.514256 # Horizontal
+#SOUTHERN_LATITUDE = 59.244671 # Horizontal
+#WESTERN_LONGITUDE = 17.756988 # Vertical
+#EASTERN_LONGITUDE = 18.449283 # Vertical
 
-#NORTHERN_LATITUDE = 59.390876 # Horizontal  # Lidingo
-#SOUTHERN_LATITUDE = 59.338633 # Horizontal  # Lidingo
-#WESTERN_LONGITUDE = 18.095055 # Vertical    # Lidingo
-#EASTERN_LONGITUDE = 18.254978 # Vertical    # Lidingo
+NORTHERN_LATITUDE = 59.390876 # Horizontal  # Lidingo
+SOUTHERN_LATITUDE = 59.338633 # Horizontal  # Lidingo
+WESTERN_LONGITUDE = 18.095055 # Vertical    # Lidingo
+EASTERN_LONGITUDE = 18.254978 # Vertical    # Lidingo
 
 # TODO: Remove?
 NW = (NORTHERN_LATITUDE, WESTERN_LONGITUDE) # NW Kungsangen

@@ -1,3 +1,5 @@
+import pickle
+
 from minutes_to_color import minutes_to_color_5, minutes_to_color_10
 
 class Coordinate(object):
@@ -105,3 +107,12 @@ class Coordinates(object):
 
     def coordinates(self):
         return self._coordinates
+
+class ExceptionCoordinates(Coordinates):
+    def __init__(self):
+        super(ExceptionCoordinates, self).__init__()
+
+    def write_exception_coordinates_to_file(self):
+        # TODO: Specific file name (same as traffic data file postfix)
+        with open('coordinates_exception.txt', 'wb') as exception_file:
+            pickle.dump(self, exception_file)

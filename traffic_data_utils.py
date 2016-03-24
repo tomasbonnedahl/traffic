@@ -1,15 +1,16 @@
 import requests
+from key import key
 
-key = '9e7af9db97e54776b410b2b3e61c6146'
+# TODO: Today + next business day
 
-def get_payload(coordinate):
+def get_payload(latitude, longitude):
     payload = {'key': key,
                'numTrips': '1',
-               'originCoordLat': coordinate.get_latitude_as_str(),
-               'originCoordLong': coordinate.get_longitude_as_str(),
+               'originCoordLat': str(latitude),
+               'originCoordLong': str(longitude),
                'originCoordName': 'Stockholm',
                'destId': '300109000',
-               'date': '2016-03-15',
+               'date': '2016-03-25',
                'time': '08:30',
                'searchForArrival': '1'}
     return payload
@@ -39,7 +40,7 @@ def get_duration_from_request(request):
             else:
                 trip_list = json_data['TripList']
                 if 'errorCode' in trip_list:
-                    print 'has error code:', trip_list['errorCode']
+                    print 'Error code in trip list:', trip_list['errorCode']
                 else:
                     trip_data = trip_list['Trip']
                     duration = get_duration_from_trip_data(trip_data)

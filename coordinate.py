@@ -1,118 +1,174 @@
-import pickle
+from math import hypot
+from random import randint
 
-from minutes_to_color import minutes_to_color_5, minutes_to_color_10
+from peewee import Model, SqliteDatabase, FloatField, IntegerField, BooleanField, ForeignKeyField, CharField
+from coordinate_generator import RawCoordinateGenerator
+from coordinate_utils import calculate_step_size, distance_between, construct_str, almost_equal
 
-class Coordinate(object):
-    def __init__(self, lat, lon):
-        self._lat = lat
-        self._lon = lon
-        self._minutes = None
+
+PERSISTENT_DB   = 'traffic.db'
+TESTING_DB = ':memory:'
+DB_NAME = PERSISTENT_DB
+
+database = SqliteDatabase(DB_NAME)
+
+''' Models '''
+class BaseModel(Model):
+    class Meta:
+        database = database
+
+# Subclasses depending on precision? Own impl of neighbours, center_coord, etc?
+class CoordinateBox(BaseModel):
+    latitude_distance_to_next_coordinate = FloatField(null=True)
+    longitude_distance_to_next_coordinate = FloatField(null=True)
+    precision = IntegerField(default=1)
 
     def __str__(self):
-        return self.get_latitude_as_str() + ', ' + self.get_longitude_as_str()
+        return 'Box ' + str(self.id)
+
+    def center_coordinates(self):
+        center_coordinates = []
+        if self.precision == 1:
+            # Precision 1 is all coordinates
+            center_coordinates = list(self.coordinates)
+
+        elif self.precision == 2:    # TODO: Enum
+            delta_index = [16, 19, 22, 25, 28]
+            big_count = [0, 45, 90, 135, 180]
+            return self.get_center_coordinate_list(delta_index, big_count)
+
+        elif self.precision == 3:
+            # TODO: Only one list with the indexes, possibly map to nbr of coordinates in the box (15)
+            delta_index = [2, 7, 12]
+            big_count = [30, 105, 180]
+            return self.get_center_coordinate_list(delta_index, big_count)
+
+        elif self.precision == 4:
+            # Least precision, one coordinate of all 15x15
+            delta_index = [7]
+            big_count = [120]
+            return self.get_center_coordinate_list(delta_index, big_count)
+
+        elif self.precision == 5:
+            # No coordinates at all - box should be blank
+            pass
+
+        else:
+            raise Exception('Should not have precision more than 5')
+        return center_coordinates
+
+    def get_center_coordinate_list(self, delta_index, big_count):
+        center_coordinates = []
+        sorted_coordinates = list(self.coordinates)
+        center_coordinate_indexes = []
+        for i in big_count:
+            center_coordinate_indexes += [i+delta for delta in delta_index]
+
+        for center_coordinate_index in center_coordinate_indexes:
+            center_coordinates.append(sorted_coordinates[center_coordinate_index])
+        return center_coordinates
+
+    def neighbours(self, to_coordinate):
+        neighbours = []
+        if self.precision == 1 or self.precision == 5:
+            # No neighbours
+            pass
+        elif self.precision == 2 or self.precision == 3:
+            for coordinate in self.coordinates:
+                if coordinate.is_neightbour_to(to_coordinate):
+                    neighbours.append(coordinate)
+        elif self.precision == 4:
+            # All are neighbours except the coordinate requested
+            # TODO: Do something more clever here to remove one, we know the index...?
+            for coordinate in self.coordinates:
+                if coordinate != to_coordinate:
+                    neighbours.append(coordinate)
+        return neighbours
+
+class Coordinate(BaseModel):
+    latitude = FloatField()
+    longitude = FloatField()
+    minutes = IntegerField(null=True)
+    color = CharField(null=True)
+    exception = BooleanField(default=False)
+    box = ForeignKeyField(CoordinateBox, related_name='coordinates')
+
+    def _unrounded_single_hypot(self):
+        return hypot(self.box.latitude_distance_to_next_coordinate, self.box.longitude_distance_to_next_coordinate)
+
+    def get_single_hypot(self):
+        return round(self._unrounded_single_hypot(), 6)
+
+    def get_double_hypot(self):
+        return round(2*self._unrounded_single_hypot(), 6)
+
+    def is_neightbour_to(self, to_coordinate):
+        neighbour = False
+
+        if almost_equal(self.latitude, to_coordinate.latitude) and almost_equal(self.longitude, to_coordinate.longitude):
+            return False # Same coordinate
+
+        if self.box.precision == 2:
+            dist = round(hypot(self.latitude - to_coordinate.latitude, self.longitude - to_coordinate.longitude), 6)
+            if dist <= self.get_single_hypot():
+
+                return True
+
+        elif self.box.precision == 3:
+            dist = round(hypot(self.latitude - to_coordinate.latitude, self.longitude - to_coordinate.longitude), 6)
+            if dist <= self.get_double_hypot():
+                return True
+
+        return neighbour
+
+    def get_abs_latitude_diff(self, to_coordinate):
+        return abs(round(self.latitude - to_coordinate.latitude, 6))
+
+    def get_abs_longitude_diff(self, to_coordinate):
+        return abs(round(self.longitude - to_coordinate.longitude, 6))
+
+    def get_square_nw_as_str(self, lat_distance_to_next_coordinate, lon_distance_to_next_coordinate):
+        return construct_str(self.latitude + lat_distance_to_next_coordinate/2, self.longitude - lon_distance_to_next_coordinate/2)
+
+    def get_square_sw_as_str(self, lat_distance_to_next_coordinate, lon_distance_to_next_coordinate):
+        return construct_str(self.latitude - lat_distance_to_next_coordinate/2, self.longitude - lon_distance_to_next_coordinate/2)
+
+    def get_square_se_as_str(self, lat_distance_to_next_coordinate, lon_distance_to_next_coordinate):
+        return construct_str(self.latitude - lat_distance_to_next_coordinate/2, self.longitude + lon_distance_to_next_coordinate/2)
+
+    def get_square_ne_as_str(self, lat_distance_to_next_coordinate, lon_distance_to_next_coordinate):
+        return construct_str(self.latitude + lat_distance_to_next_coordinate/2, self.longitude + lon_distance_to_next_coordinate/2)
+
+    def __str__(self):
+        return str(self.latitude) + ', ' + str(self.longitude)
 
     def __gt__(self, other):
-        if self.get_latitude() == other.get_latitude():
-            return self.get_longitude() > self.get_longitude()
-        return self.get_latitude() > other.get_latitude()
+        if self.latitude == other.latitude:
+            return self.longitude > self.longitude
+        return self.latitude > other.latitude
 
     def __lt__(self, other):
-        if self.get_latitude() == other.get_latitude():
-            return self.get_longitude() < self.get_longitude()
-        return self.get_latitude() < other.get_latitude()
+        if self.latitude == other.latitude:
+            return self.longitude < self.longitude
+        return self.latitude < other.latitude
 
     def __ge__(self, other):
-        if self.get_latitude() == other.get_latitude():
-            return self.get_longitude() <= self.get_longitude()
-        return self.get_latitude() <= other.get_latitude()
+        if self.latitude == other.latitude:
+            return self.longitude <= self.longitude
+        return self.latitude <= other.latitude
 
     def __le__(self, other):
-        if self.get_latitude() == other.get_latitude():
-            return self.get_longitude() <= self.get_longitude()
-        return self.get_latitude() <= other.get_latitude()
+        if self.latitude == other.latitude:
+            return self.longitude <= self.longitude
+        return self.latitude <= other.latitude
 
-    def get_latitude(self):
-        return self._lat
+    def __eq__(self, other):
+        return self.latitude == other.latitude and self.longitude == other.longitude
 
-    def get_longitude(self):
-        return self._lon
+database.connect()
+if DB_NAME == TESTING_DB:
+    database.create_tables([CoordinateBox, Coordinate])
 
-    def get_latitude_as_str(self):
-        return str(self._lat)
-
-    def get_longitude_as_str(self):
-        return str(self._lon)
-
-    def set_duration(self, minutes):
-        self._minutes = minutes
-
-    def get_duration(self):
-        return self._minutes
-
-    def has_duration(self):
-        return self._minutes != None
-
-    def get_minutes_to_color_mapping(self):
-        return minutes_to_color_5
-
-    def get_color(self):
-        color = None
-        minutes_to_color = self.get_minutes_to_color_mapping()
-        if self.has_duration():
-            for key in sorted(minutes_to_color.keys()):
-                if int(self.get_duration()) < key and not color:
-                    color = minutes_to_color[key]
-        if not color:
-            color = minutes_to_color[95]
-        return color
-
-    def round_and_str(self, value):
-        return str(round(value, 6))
-
-    def construct_str(self, lat, lon):
-        return self.round_and_str(lat) + ',' + self.round_and_str(lon)
-
-    def get_square_nw_as_str(self, lat_delta, lon_delta):
-        return self.construct_str(self.get_latitude() + lat_delta, self.get_longitude() - lon_delta)
-
-    def get_square_sw_as_str(self, lat_delta, lon_delta):
-        return self.construct_str(self.get_latitude() - lat_delta, self.get_longitude() - lon_delta)
-
-    def get_square_se_as_str(self, lat_delta, lon_delta):
-        return self.construct_str(self.get_latitude() - lat_delta, self.get_longitude() + lon_delta)
-
-    def get_square_ne_as_str(self, lat_delta, lon_delta):
-        return self.construct_str(self.get_latitude() + lat_delta, self.get_longitude() + lon_delta)
-
-class Coordinates(object):
-    def __init__(self):
-        self._lat_delta = None
-        self._lon_delta = None
-        self._coordinates = []
-
-    def set_lat_delta(self, lat_delta):
-        self._lat_delta = lat_delta
-
-    def set_lon_delta(self, lon_delta):
-        self._lon_delta = lon_delta
-
-    def get_lat_delta(self):
-        return self._lat_delta
-
-    def get_lon_delta(self):
-        return self._lon_delta
-
-    def add_coordinate(self, coordinate):
-        self._coordinates.append(coordinate)
-
-    def coordinates(self):
-        return self._coordinates
-
-class ExceptionCoordinates(Coordinates):
-    def __init__(self):
-        super(ExceptionCoordinates, self).__init__()
-
-    def write_exception_coordinates_to_file(self):
-        # TODO: Specific file name (same as traffic data file postfix)
-        with open('coordinates_exception.txt', 'wb') as exception_file:
-            pickle.dump(self, exception_file)
+def create_db_tables():
+    database.create_tables([CoordinateBox, Coordinate], safe=True)
+    print "Database configured"

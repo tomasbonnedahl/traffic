@@ -1,5 +1,8 @@
 .idea/
 dummy.py
 temp
+key.py
+traffic.db
+traffic.db-journal
 *.pyc
 *.txt

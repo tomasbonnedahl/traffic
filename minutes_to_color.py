@@ -29,5 +29,5 @@ minutes_to_color_5 = {
     75: '#FFCCE5',
     80: '#E0E0E0',
     85: '#C0C0C0',
-    90: 'A0A0A0'
+    90: '#A0A0A0'
 }

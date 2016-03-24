@@ -19,7 +19,7 @@ function initMap() {
         else {
             var lines = text.split('\n')
             if (lines.length % 5 == 1) {
-                for(var i = 0; i < lines.length; i=i+5){
+                for(var i = 0; i < lines.length-1; i=i+5){
                     var nw_lat = getLatFromLine(lines[i])
                     var nw_lon = getLonFromLine(lines[i])
 

@@ -1,6 +1,6 @@
 from coordinate import CoordinateBox, create_db_tables
 
-from coordinate_sql import create_boxes_and_coordinates # TODO: Change name of file and method
+from box_creator import create_boxes_and_coordinates # TODO: Change name of file and method
 from traffic_proxy import set_traffic_data
 from color import set_color_from_traffic
 from output_file import write_output_file
@@ -25,7 +25,7 @@ def create_test_boxes():
     create_boxes_and_coordinates(south, north, west, east, num_boxes_in_dir=10, num_coords_in_dir=15)
 
 def update_box():
-    d = {33: 1, 34: 1, 35: 1, 36: 1, 37 : 1, 47: 1, 52: 1, 53: 1, 57: 1}
+    d = {62: 3, 63: 3, 64: 3, 65: 3, 66: 3, 67: 3}
     for key, value in d.iteritems():
         box = CoordinateBox.get(CoordinateBox.id == key)
         box.precision = value
@@ -35,24 +35,24 @@ def update_box():
 '''
     Main application
 '''
-def run():
-    #create_persistent_tables_and_boxes()
-    #print '-- Setting box precision'
-    #set_box_precision()
-
-    print '-- Showing all boxes'
-    show_all_boxes()
-
-    print '-- Setting traffic data'
-    set_traffic_data()
-
+def set_color_and_write_to_file():
     print '-- Set color from traffic'
     set_color_from_traffic()
 
     print '-- Writing output file'
     write_output_file()
 
-#run()
-#update_box()
-show_all_boxes()
+def run():
+    #create_persistent_tables_and_boxes()
+    print '-- Setting traffic data'
+    set_traffic_data()
+    set_color_and_write_to_file()
 
+def run_with_exception_coordinates():
+    print '-- Setting traffic data'
+    set_traffic_data(include_exception_coordinates=True)
+    set_color_and_write_to_file()
+
+run()
+#update_box()
+#show_all_boxes()

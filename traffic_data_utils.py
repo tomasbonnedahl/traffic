@@ -1,7 +1,15 @@
+import datetime
 import requests
+
 from key import key
 
-# TODO: Today + next business day
+def get_business_date_as_str():
+    business_date = datetime.date.today()
+    delta = 1
+    if business_date.weekday() in [4, 5, 6]: # Weekend
+        delta = 3
+    business_date = business_date + datetime.timedelta(delta)
+    return str(business_date)
 
 def get_payload(latitude, longitude):
     payload = {'key': key,
@@ -10,7 +18,7 @@ def get_payload(latitude, longitude):
                'originCoordLong': str(longitude),
                'originCoordName': 'Stockholm',
                'destId': '300109000',
-               'date': '2016-03-25',
+               'date': get_business_date_as_str(),
                'time': '08:30',
                'searchForArrival': '1'}
     return payload

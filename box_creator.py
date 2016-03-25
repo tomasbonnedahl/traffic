@@ -28,20 +28,3 @@ def create_boxes_and_coordinates(south_in, north_in, west_in, east_in, num_boxes
             for raw_coordinate in raw_coord_list:
                 coordinate = Coordinate(latitude = raw_coordinate[0], longitude = raw_coordinate[1], box = box)
                 coordinate.save()
-
-def read_data():
-    print '-- READ --'
-    print 'boxes len', len(CoordinateBox.select())
-
-    coordinates = CoordinateBox.get(CoordinateBox.id == 1).get()
-    for coord in coordinates.coordinates:
-        pass #print 'COORD', coord
-
-    print 'coordinates len', len(Coordinate.select())
-    for coord in Coordinate.select():
-        pass #print 'coord:', coord
-
-    for box in CoordinateBox.select():
-        print 'box:', box
-        for coord in box.coordinates:
-            print coord

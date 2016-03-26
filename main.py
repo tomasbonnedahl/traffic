@@ -25,12 +25,13 @@ def create_test_boxes():
     create_boxes_and_coordinates(south, north, west, east, num_boxes_in_dir=10, num_coords_in_dir=15)
 
 def update_box():
-    d = {62: 3, 63: 3, 64: 3, 65: 3, 66: 3, 67: 3}
+    d = {62: 1, 63: 1, 67: 1}
     for key, value in d.iteritems():
         box = CoordinateBox.get(CoordinateBox.id == key)
-        box.precision = value
-        box.save()
-        print 'updated box...'
+        if not box.precision == value:
+            box.precision = value
+            box.save()
+            print 'updated box...'
 
 '''
     Main application

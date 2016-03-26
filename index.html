@@ -13,11 +13,23 @@
       #map {
         height: 100%;
       }
+        .labels {
+            color: red;
+            background-color: white;
+            font-family: "Lucida Grande", "Arial", sans-serif;
+            font-size: 10px;
+            font-weight: bold;
+            text-align: center;
+            width: 65px;
+            border: 2px solid black;
+            white-space: nowrap;
+        }
     </style>
   </head>
   <body>
     <div id="map"></div>
-    <script src="map_data.js"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCimS5bR0svoNyZs48kGHUT7A0zrWE5D0s&callback=initMap"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCimS5bR0svoNyZs48kGHUT7A0zrWE5D0s"></script>
+    <script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerwithlabel/src/markerwithlabel.js"></script>
+    <script type="text/javascript" src="map_data.js"></script>
   </body>
 </html>

@@ -40,8 +40,20 @@ function initMap() {
                       {lat: ne_lat, lng: ne_lon}  // NE
                     ];
 
+                    var poly_text = new MarkerWithLabel({
+                        position: new google.maps.LatLng(0,0),
+                        draggable: false,
+                        raiseOnDrag: false,
+                        map: map,
+                        labelContent: "12 min",
+                        labelAnchor: new google.maps.Point(30, 20),
+                        labelStyle: {opacity: 1.0},
+                        visible: false,
+                        icon: "http://placehold.it/1x1"
+                    });
+
                     // Construct the polygon.
-                    var colorBox = new google.maps.Polygon({
+                    var polygon = new google.maps.Polygon({
                       paths: boxCoords,
                       strokeColor: color,
                       strokeOpacity: 0.8,
@@ -50,7 +62,16 @@ function initMap() {
                       fillOpacity: 0.7
                     });
 
-                    colorBox.setMap(map);
+                    polygon.setMap(map);
+
+                    google.maps.event.addListener(polygon, "mousemove", function(event) {
+                        poly_text.setPosition(event.latLng);
+                        poly_text.setVisible(true);
+                    });
+
+                    google.maps.event.addListener(polygon, "mouseout", function(event) {
+                        poly_text.setVisible(false);
+                    });
                 }
             }
         }
@@ -74,12 +95,14 @@ function getFileFromServer(url, doneCallback) {
 
 function splitLine(line) {
     return line.split(',')
-}
+};
 
 function getLatFromLine(line) {
     return parseFloat(splitLine(line)[0])
-}
+};
 
 function getLonFromLine(line) {
     return parseFloat(splitLine(line)[1])
-}
+};
+
+google.maps.event.addDomListener(window, 'load', initMap);

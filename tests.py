@@ -4,7 +4,7 @@ from math import hypot
 
 from coordinate_utils import distance_between, calculate_step_size
 from coordinate_generator import RawCoordinateGenerator
-from coordinate import Coordinate, CoordinateBox
+from coordinate import Coordinate, CoordinateBox, open_database_connection, close_database_connection
 from box_creator import create_boxes_and_coordinates
 
 class TestingClass(unittest.TestCase):
@@ -14,9 +14,10 @@ class TestingClass(unittest.TestCase):
         self.west = 200.0
         self.east = 300.0
         self.generator = RawCoordinateGenerator()
+        open_database_connection(persistent=False)
 
     def tearDown(self):
-        pass
+        close_database_connection()
 
     def get_coordinate_lines(self):
         south = 58.900000  # Horizontal line
@@ -97,7 +98,6 @@ class TestingClass(unittest.TestCase):
     def test_create_one_box_15_15_coords_validate_neighbours_prec_2(self):
         south, north, west, east = self.get_coordinate_lines()
 
-        # TODO: Add precision, property loading instead of constructor?
         create_boxes_and_coordinates(south, north, west, east, 1, 15)
         box = CoordinateBox.get(CoordinateBox.id == 1).get()
         self.set_precision_on_box(box, 2)
@@ -116,7 +116,6 @@ class TestingClass(unittest.TestCase):
     def test_create_one_box_15_15_coords_validate_neighbours_prec_3(self):
         south, north, west, east = self.get_coordinate_lines()
 
-        # TODO: Property loading instead of constructor? No class
         create_boxes_and_coordinates(south, north, west, east, 1, 15)
         box = CoordinateBox.get(CoordinateBox.id == 1).get()
         self.set_precision_on_box(box, 3)

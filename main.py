@@ -1,6 +1,6 @@
-from coordinate import CoordinateBox, create_db_tables
+from coordinate import CoordinateBox, create_db_tables, open_database_connection, close_database_connection
 
-from box_creator import create_boxes_and_coordinates # TODO: Change name of file and method
+from box_creator import create_boxes_and_coordinates
 from traffic_proxy import set_traffic_data
 from color import set_color_from_traffic
 from output_file import write_output_file
@@ -54,6 +54,18 @@ def run_with_exception_coordinates():
     set_traffic_data(include_exception_coordinates=True)
     set_color_and_write_to_file()
 
-run()
-#update_box()
-#show_all_boxes()
+def execute():
+    #run()
+    #run_with_exception_coordinates()
+    #update_box()
+    #show_all_boxes()
+    write_output_file()
+
+try:
+    open_database_connection()
+    execute()
+except Exception as e:
+    print '### Received exception:', e
+finally:
+    print 'Closing db connection'
+    close_database_connection()

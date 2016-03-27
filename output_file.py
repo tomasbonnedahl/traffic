@@ -12,4 +12,5 @@ def write_output_file():
                     output_file.write('%s\n' % coordinate.get_square_se_as_str(box.latitude_distance_to_next_coordinate, box.longitude_distance_to_next_coordinate))
                     output_file.write('%s\n' % coordinate.get_square_ne_as_str(box.latitude_distance_to_next_coordinate, box.longitude_distance_to_next_coordinate))
                     output_file.write('%s\n' % coordinate.color)
+                    output_file.write('%s\n' % coordinate.minutes)
     print 'File written'

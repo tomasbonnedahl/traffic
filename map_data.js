@@ -1,11 +1,14 @@
-function initMap() {
-    var centerLatLon = {lat: 59.332598, lng: 18.065236};
+var map;
 
-    var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 11,
-      center: centerLatLon,
-      mapTypeId: google.maps.MapTypeId.TERRAIN
-    });
+function initialize() {
+    var centerLatLon = new google.maps.LatLng(59.332598, 18.065236);
+    var myOptions = {
+        zoom: 10,
+        center: centerLatLon,
+        mapTypeId: google.maps.MapTypeId.TERRAIN
+    };
+
+    map = new google.maps.Map(document.getElementById("map"), myOptions);
 
     var marker = new google.maps.Marker({
         position: centerLatLon,
@@ -18,8 +21,8 @@ function initMap() {
         }
         else {
             var lines = text.split('\n')
-            if (lines.length % 5 == 1) {
-                for(var i = 0; i < lines.length-1; i=i+5){
+            if (lines.length % 6 == 1) {
+                for(var i = 0; i < lines.length-1; i=i+6){
                     var nw_lat = getLatFromLine(lines[i])
                     var nw_lon = getLonFromLine(lines[i])
 
@@ -33,50 +36,55 @@ function initMap() {
                     var ne_lon = getLonFromLine(lines[i+3])
 
                     var color = lines[i+4]
+
                     var boxCoords = [
-                      {lat: nw_lat, lng: nw_lon}, // NW
-                      {lat: sw_lat, lng: sw_lon}, // SW
-                      {lat: se_lat, lng: se_lon}, // SE
-                      {lat: ne_lat, lng: ne_lon}  // NE
+                        new google.maps.LatLng(nw_lat, nw_lon),
+                        new google.maps.LatLng(sw_lat, sw_lon),
+                        new google.maps.LatLng(se_lat, se_lon),
+                        new google.maps.LatLng(ne_lat, ne_lon)
                     ];
 
-                    var poly_text = new MarkerWithLabel({
-                        position: new google.maps.LatLng(0,0),
-                        draggable: false,
-                        raiseOnDrag: false,
-                        map: map,
-                        labelContent: "12 min",
-                        labelAnchor: new google.maps.Point(30, 20),
-                        labelStyle: {opacity: 1.0},
-                        visible: false,
-                        icon: "http://placehold.it/1x1"
-                    });
+                    var min = lines[i+5] + ' min';
 
-                    // Construct the polygon.
-                    var polygon = new google.maps.Polygon({
-                      paths: boxCoords,
-                      strokeColor: color,
-                      strokeOpacity: 0.8,
-                      strokeWeight: 0,
-                      fillColor: color,
-                      fillOpacity: 0.7
-                    });
-
-                    polygon.setMap(map);
-
-                    google.maps.event.addListener(polygon, "mousemove", function(event) {
-                        poly_text.setPosition(event.latLng);
-                        poly_text.setVisible(true);
-                    });
-
-                    google.maps.event.addListener(polygon, "mouseout", function(event) {
-                        poly_text.setVisible(false);
-                    });
+                    makePolygon(boxCoords, min, color);
                 }
             }
         }
     });
 };
+
+function makePolygon(polyCoords, polyLabel, color) {
+    var marker = new MarkerWithLabel({
+        position: new google.maps.LatLng(0,0),
+        draggable: false,
+        raiseOnDrag: false,
+        map: map,
+        labelContent: polyLabel,
+        labelAnchor: new google.maps.Point(30, 20),
+        labelClass: "labels", // the CSS class for the label
+        labelStyle: {opacity: 1.0},
+        icon: "http://placehold.it/1x1",
+        visible: false
+     });
+
+    var poly = new google.maps.Polygon({
+        paths: polyCoords,
+        strokeColor: color,
+        strokeOpacity: 0.8,
+        strokeWeight: 0,
+        fillColor: color,
+        fillOpacity: 0.7,
+        map: map
+    });
+
+    google.maps.event.addListener(poly, "mousemove", function(event) {
+        marker.setPosition(event.latLng);
+        marker.setVisible(true);
+    });
+    google.maps.event.addListener(poly, "mouseout", function(event) {
+        marker.setVisible(false);
+    });
+}
 
 function getFileFromServer(url, doneCallback) {
     var xhr;
@@ -91,18 +99,18 @@ function getFileFromServer(url, doneCallback) {
             doneCallback(xhr.status == 200 ? xhr.responseText : null);
         }
     }
-};
+}
 
 function splitLine(line) {
     return line.split(',')
-};
+}
 
 function getLatFromLine(line) {
     return parseFloat(splitLine(line)[0])
-};
+}
 
 function getLonFromLine(line) {
     return parseFloat(splitLine(line)[1])
-};
+}
 
-google.maps.event.addDomListener(window, 'load', initMap);
+google.maps.event.addDomListener(window, 'load', initialize);

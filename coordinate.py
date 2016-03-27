@@ -1,16 +1,13 @@
 from math import hypot
-from random import randint
 
 from peewee import Model, SqliteDatabase, FloatField, IntegerField, BooleanField, ForeignKeyField, CharField
-from coordinate_generator import RawCoordinateGenerator
-from coordinate_utils import calculate_step_size, distance_between, construct_str, almost_equal
-
+from coordinate_utils import construct_str, almost_equal
 
 PERSISTENT_DB   = 'traffic.db'
 TESTING_DB = ':memory:'
 DB_NAME = PERSISTENT_DB
 
-database = SqliteDatabase(DB_NAME)
+database = SqliteDatabase(None)
 
 ''' Models '''
 class BaseModel(Model):
@@ -165,9 +162,18 @@ class Coordinate(BaseModel):
     def __eq__(self, other):
         return self.latitude == other.latitude and self.longitude == other.longitude
 
-database.connect()
-if DB_NAME == TESTING_DB:
-    database.create_tables([CoordinateBox, Coordinate])
+def open_database_connection(persistent = True):
+    if persistent:
+        database.init(PERSISTENT_DB)
+        database.connect()
+    else:
+        database.init(TESTING_DB)
+        database.connect()
+        database.create_tables([CoordinateBox, Coordinate], safe=True)
+
+def close_database_connection():
+    ''' Closes the database connection '''
+    database.close()
 
 def create_db_tables():
     database.create_tables([CoordinateBox, Coordinate], safe=True)

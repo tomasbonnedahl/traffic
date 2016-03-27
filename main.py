@@ -59,8 +59,7 @@ def execute():
     #run_with_exception_coordinates()
     #update_box()
     #show_all_boxes()
-    write_output_file()
-
+    set_color_and_write_to_file()
 try:
     open_database_connection()
     execute()

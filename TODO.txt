@@ -1,18 +1,16 @@
 HIGH:
-- Have separate traffic files for each area, the color code should work through all traffic files
-    to build the color text file
-- Save exception coordinates to separate file as
-    Coordinates with Coordinate objects in it
-    - When the separate file is rerun, it should add to the traffic file
-    - Each area to have two files, normal traffic_minutes and traffic_exception_coordinates
+- TODOs
+- Better colors
 
 MEDIUM:
-- Check-point at center location
+- Add hover text to destination marker
 - Fix webserver code for fetching different file types
+- Add additional destinations
+    - Add them as non-colored markers which can be clicked
 
 LOW:
+- Add time for driving
 - Saturation/sephia of map
     - https://developers.google.com/maps/documentation/javascript/styling#creating_a_styledmaptype
 - Filter coordinates water/land and save to coordinates_filtered.txt (known water coords?)
-- SQL instead of files?
-- Added line...
+- Show different granularity for different zoom levels

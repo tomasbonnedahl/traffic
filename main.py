@@ -25,7 +25,7 @@ def create_test_boxes():
     create_boxes_and_coordinates(south, north, west, east, num_boxes_in_dir=10, num_coords_in_dir=15)
 
 def update_box():
-    d = {62: 1, 63: 1, 67: 1}
+    d = {32: 1, 42: 1, 31: 1, 41: 1, 49: 1}
     for key, value in d.iteritems():
         box = CoordinateBox.get(CoordinateBox.id == key)
         if not box.precision == value:
@@ -55,11 +55,11 @@ def run_with_exception_coordinates():
     set_color_and_write_to_file()
 
 def execute():
-    #run()
+    run()
     #run_with_exception_coordinates()
     #update_box()
     #show_all_boxes()
-    set_color_and_write_to_file()
+    #set_color_and_write_to_file()
 try:
     open_database_connection()
     execute()

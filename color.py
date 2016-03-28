@@ -2,24 +2,14 @@ from coordinate import Coordinate, CoordinateBox
 
 from minutes_to_color import minutes_to_color_5, minutes_to_color_10
 
-'''
-def get_color(coordinate):
-    color = None
-    if coordinate.minutes:
-        for key in sorted(minutes_to_color_5.keys()):
-            if int(coordinate.minutes) < key and not color:
-                color = minutes_to_color_5[key]
-    if not color:
-        color = minutes_to_color_5[90]
-    return color
-'''
 def get_color_from_minutes(minutes):
     color = None
-    for key in sorted(minutes_to_color_10.keys()):
+    sorted_keys = sorted(minutes_to_color_10.keys())
+    for key in sorted_keys:
         if minutes <= key and not color:
             color = minutes_to_color_10[key]
     if not color:
-        color = minutes_to_color_10[110] # TODO: Sorted keys + max()
+        color = max(sorted_keys)
     return color
 
 def set_color_from_traffic():

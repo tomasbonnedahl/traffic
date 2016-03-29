@@ -1,5 +1,5 @@
 HIGH:
-- TODOs
+- Add Python script to upload files to FTP (include in main.py?)
 - Better colors
 
 MEDIUM:

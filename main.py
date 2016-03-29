@@ -33,6 +33,15 @@ def update_box():
             box.save()
             print 'updated box...'
 
+def clean_boxes():
+    boxes = [54, 55, 64, 65]
+    for box_index in boxes:
+        box = CoordinateBox.get(CoordinateBox.id == box_index)
+        for coordinate in box.coordinates:
+            coordinate.minutes = None
+            coordinate.color = None
+            coordinate.save()
+
 '''
     Main application
 '''
@@ -55,6 +64,7 @@ def run_with_exception_coordinates():
     set_color_and_write_to_file()
 
 def execute():
+    #clean_boxes()
     run()
     #run_with_exception_coordinates()
     #update_box()
